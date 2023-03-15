@@ -353,6 +353,13 @@ MPL_STATIC_INLINE_PREFIX int MPIDI_OFI_send_normal(const void *buf, MPI_Aint cou
         ctrl.type = MPIDI_OFI_CTRL_HUGE;
         for (int i = 0; i < num_nics; i++) {
             ctrl.u.huge.info.rma_keys[i] = rma_keys[i];
+            if (MPIDI_OFI_global.mr_raw_key) {
+                ctrl.u.huge.info.raw_keys[i].size = MPIDI_OFI_MAX_KEY_SIZE;
+                MPIDI_OFI_CALL(fi_mr_raw_attr(huge_send_mrs[i], NULL,
+                                              ctrl.u.huge.info.raw_keys[i].key,
+                                              &ctrl.u.huge.info.raw_keys[i].size, 0),
+                               mr_raw_attr);
+            }
         }
         ctrl.u.huge.info.comm_id = comm->context_id;
         ctrl.u.huge.info.tag = tag;

@@ -398,7 +398,11 @@ typedef struct {
 #ifdef MPIDI_OFI_ENABLE_RUNTIME_CHECKS
     MPIDI_OFI_capabilities_t settings;
 #endif
+
+    int mr_raw_key;
 } MPIDI_OFI_global_t;
+
+#define MPIDI_OFI_MAX_KEY_SIZE 64
 
 typedef struct {
     MPIR_Context_id_t comm_id;
@@ -410,6 +414,10 @@ typedef struct {
     uint64_t rma_keys[MPIDI_OFI_MAX_NICS];
     int vni_src;
     int vni_dst;
+    struct {
+        uint8_t key[MPIDI_OFI_MAX_KEY_SIZE];
+        size_t size;
+    } raw_keys[MPIDI_OFI_MAX_NICS];
 } MPIDI_OFI_huge_remote_info_t;
 
 typedef struct {

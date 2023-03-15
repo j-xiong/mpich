@@ -1396,6 +1396,8 @@ static int update_global_limits(struct fi_info *prov)
         MPIR_ERR_SETANDJUMP(mpi_errno, MPI_ERR_OTHER, "**ch4|too_many_ranks");
     }
 
+    MPIDI_OFI_global.mr_raw_key = !!(prov->domain_attr->mr_mode & FI_MR_RAW);
+
   fn_exit:
     return mpi_errno;
   fn_fail:

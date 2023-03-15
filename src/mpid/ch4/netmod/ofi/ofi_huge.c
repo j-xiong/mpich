@@ -166,6 +166,16 @@ static int get_huge_complete(MPIR_Request * rreq)
                                      &ctrl, sizeof(ctrl), vni_local, vni_remote);
     MPIR_ERR_CHECK(mpi_errno);
 
+    if (MPIDI_OFI_global.mr_raw_key) {
+        int i, ctx_idx;
+
+        for (i = 0; i < MPIDI_OFI_global.num_nics; i++) {
+            ctx_idx = MPIDI_OFI_get_ctx_index(comm_ptr, info->vni_dst, i);
+           MPIDI_OFI_CALL(fi_mr_unmap_key(MPIDI_OFI_global.ctx[ctx_idx].domain,
+                                           info->rma_keys[i]), mr_unmap_keys);
+        }
+    }
+
     MPL_free(info);
 
   fn_exit:
@@ -259,6 +269,20 @@ int MPIDI_OFI_recv_huge_control(int vni, MPIR_Context_id_t comm_id, int rank, in
     info = MPL_malloc(sizeof(MPIDI_OFI_huge_remote_info_t), MPL_MEM_OTHER);
     MPIR_Assert(info);
     memcpy(info, info_ptr, sizeof(*info));
+
+    if (MPIDI_OFI_global.mr_raw_key) {
+        int i, ctx_idx;
+
+        for (i = 0; i < MPIDI_OFI_global.num_nics; i++) {
+            /* FIXME: instead of NULL, how to get comm from comm_id? */
+            ctx_idx = MPIDI_OFI_get_ctx_index(NULL, info->vni_dst, i);
+           MPIDI_OFI_CALL(fi_mr_map_raw(MPIDI_OFI_global.ctx[ctx_idx].domain,
+                                         0UL,
+                                         info->raw_keys[i].key,
+                                         info->raw_keys[i].size,
+                                         &info->rma_keys[i], 0), mr_map_raw);
+        }
+    }
 
     /* If there has been a posted receive, search through the list of unmatched
      * receives to find the one that goes with the incoming message. */

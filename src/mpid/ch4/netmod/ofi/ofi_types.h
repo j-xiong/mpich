@@ -333,7 +333,8 @@ typedef struct {
 } MPIDI_OFI_nic_info_t;
 
 /* Global state data */
-#define MPIDI_KVSAPPSTRLEN 1024
+#define MPIDI_KVSAPPSTRLEN 4096
+#define MPIDI_OFI_NAME_MAX 1024
 typedef struct {
     /* OFI objects */
     int avtid;
@@ -387,7 +388,7 @@ typedef struct {
     /* Process management and PMI globals */
     int pname_set;
     int pname_len;
-    char addrname[MPIDI_OFI_MAX_NICS][FI_NAME_MAX];
+    char addrname[MPIDI_OFI_MAX_NICS][MPIDI_OFI_NAME_MAX];
     size_t addrnamelen;         /* OFI uses the same name length within a provider. */
     char pname[MPI_MAX_PROCESSOR_NAME];
     int port_name_tag_mask[MPIR_MAX_CONTEXT_MASK];

@@ -82,10 +82,10 @@ int MPIDI_OFI_addr_exchange_root_ctx(void)
 
     /* No pre-published address table, need do address exchange. */
     /* First, each get its own name */
-    MPIDI_OFI_global.addrnamelen = FI_NAME_MAX;
+    MPIDI_OFI_global.addrnamelen = MPIDI_OFI_NAME_MAX;
     MPIDI_OFI_CALL(fi_getname((fid_t) MPIDI_OFI_global.ctx[0].ep, MPIDI_OFI_global.addrname,
                               &MPIDI_OFI_global.addrnamelen), getname);
-    MPIR_Assert(MPIDI_OFI_global.addrnamelen <= FI_NAME_MAX);
+    MPIR_Assert(MPIDI_OFI_global.addrnamelen <= MPIDI_OFI_NAME_MAX);
 
     /* Second, exchange names using PMI */
     /* If MPIR_CVAR_CH4_ROOTS_ONLY_PMI is true, we only collect a table of node-roots.
